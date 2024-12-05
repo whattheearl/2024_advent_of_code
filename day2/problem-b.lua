@@ -1,36 +1,69 @@
+local tableUtils = require("lib/table-utils")
+local eval = require("lib/is-increasing")
+local textUtils = require("lib/text")
 local file = io.open("./data.csv", "r")
 io.input(file)
 
-Line = io.read()
-print(Line)
+local line = io.read()
 Result = 0
-
-while Line ~= nil do
-	local report = string.gmatch(Line, "([^ ]+)")
-	print(report)
-	local failIndex = IsIncreasing(report)
-	if failIndex == 0 then
+while line ~= nil do
+	local report = textUtils.processLine(line)
+	tableUtils.print(report)
+	local failedIndex = eval.isIncreasing(report)
+	if failedIndex == 0 then
 		Result = Result + 1
 		goto continue
 	end
-	Copy = CopyTable(report)
-	table.remove(Copy, failIndex)
+	print(failedIndex)
 
-	if IsIncreasing(Copy) == 0 then
+	Copy = tableUtils.copy(report)
+	table.remove(Copy, failedIndex)
+	tableUtils.print(Copy)
+	failedIndex = eval.isIncreasing(Copy)
+	if failedIndex == 0 then
+		Result = Result + 1
+		goto continue
+	end
+	print(failedIndex)
+
+	Copy = tableUtils.copy(report)
+	table.remove(Copy, failedIndex - 1)
+	tableUtils.print(Copy)
+	failedIndex = eval.isIncreasing(Copy)
+	if failedIndex == 0 then
+		Result = Result + 1
+		goto continue
+	end
+	print(failedIndex)
+
+	Copy = tableUtils.reverse(report)
+	tableUtils.print(Copy)
+	failedIndex = eval.isIncreasing(Copy)
+	if failedIndex == 0 then
+		Result = Result + 1
+		goto continue
+	end
+	print(failedIndex)
+
+	Copy = tableUtils.reverse(report)
+	table.remove(Copy, failedIndex)
+	tableUtils.print(Copy)
+	failedIndex = eval.isIncreasing(Copy)
+	if failedIndex == 0 then
 		Result = Result + 1
 		goto continue
 	end
 
-	Copy = CopyTable(report)
-	table.remove(Copy, failIndex - 1)
-	if IsIncreasing(Copy) == 0 then
+	Copy = tableUtils.reverse(report)
+	table.remove(Copy, failedIndex - 1)
+	tableUtils.print(Copy)
+	failedIndex = eval.isIncreasing(Copy)
+	if failedIndex == 0 then
 		Result = Result + 1
 		goto continue
 	end
-
 	::continue::
-	Line = io.read()
-	print("")
+	line = io.read()
 end
 
 print(Result)
